@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React Letter App</title>
+    <style>
+        .tile-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 50px);
+            grid-gap: 5px;
+            margin: 20px;
+        }
+
+        button {
+            padding: 10px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .output {
+            margin-top: 20px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <!-- React and ReactDOM from CDN -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+    <!-- Your React App -->
+    <script type="text/babel">
+        const { useState } = React;
+
+        const App = () => {
+            const [outputString, setOutputString] = useState("");
+
+            const handleClick = (letter) => {
+                const newString = outputString + letter;
+
+                // Check for consecutive letters
+                const consecutive = newString.match(/([A-Z])\1\1+/g);
+                let updatedString = newString;
+
+                if (consecutive) {
+                    consecutive.forEach(seq => {
+                        const replacement = "_".repeat(Math.floor(seq.length / 3));
+                        updatedString = updatedString.replace(seq, replacement);
+                    });
+                }
+
+                setOutputString(updatedString);
+            };
+
+            const renderTiles = () => {
+                const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
+                return alphabet.map((letter) => (
+                    <button key={letter} onClick={() => handleClick(letter)}>{letter}</button>
+                ));
+            };
+
+            return (
+                <div>
+                    <div className="tile-grid">
+                        {renderTiles()}
+                    </div>
+                    <div id="outputString" className="output">
+                        {outputString}
+                    </div>
+                </div>
+            );
+        };
+
+        // Render the App component into the root div
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
